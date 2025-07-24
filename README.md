@@ -1,1 +1,1 @@
-# Kakoi
+Tienda KakoiStyle
