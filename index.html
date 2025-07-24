@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tienda de Ropa KakoiStyle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      #productModal.hidden {
+        pointer-events: none;
+      }
+      @keyframes slide-track {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .animate-slide-track {
+        animation: slide-track 20s linear infinite;
+      }
+      .color-option {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s, border 0.2s;
+        border: 2px solid transparent;
+      }
+      .color-option.selected {
+        transform: scale(1.2);
+        border: 2px solid #000;
+      }
+      .color-option:focus {
+        outline: 2px solid #4f46e5;
+        outline-offset: 2px;
+      }
+      .discount-label {
+        background: linear-gradient(45deg, #10b981, #059669);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+        100% { transform: scale(1); }
+      }
+      .cart-item {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: transform 0.2s;
+      }
+      .cart-item:hover {
+        transform: translateY(-2px);
+      }
+      .cart-item button {
+        transition: background-color 0.2s;
+      }
+      .cart-item .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .cart-item .quantity-controls button {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #cartSidebar {
+  border-radius: 0 0 0 12px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+}
+      .cart-footer {
+        background: #f9fafb;
+        border-top: 1px solid #e5e7eb;
+        padding: 20px;
+        border-radius: 0 0 0 12px;
+      }
+      .cart-footer .subtotal {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        font-size: 1.1rem;
+      }
+      .cart-footer .subtotal span:first-child {
+        font-weight: 600;
+        color: #1f2937;
+      }
+      .cart-footer .subtotal span:last-child {
+        font-weight: 700;
+        color: #4f46e5;
+        font-size: 1.25rem;
+      }
+      .cart-footer button {
+        transition: all 0.2s ease-in-out;
+        transform: scale(1);
+      }
+      .cart-footer button:hover {
+        transform: scale(1.02);
+      }
+      .checkout-btn {
+        background: linear-gradient(45deg, #10b981, #059669);
+      }
+      .clear-cart-btn {
+        background: linear-gradient(45deg, #ef4444, #b91c1c);
+      }
+     
+.no-transition-initial {
+  transition: none !important;
+}
+      .logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.75rem; 
+  letter-spacing: 0.05em; 
+  text-transform: uppercase; 
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-800 font-sans">
+    
+    <!-- NAV -->
+<nav class="bg-black text-white p-4 fixed w-full top-0 z-50 shadow-md" aria-label="Navegación principal">
+  <div class="container mx-auto flex justify-between items-center">
+    <a href="index.html" class="logo text-white" aria-label="Inicio KakoiStyle">KakoiStyle</a>
+    <div class="space-x-4 hidden md:flex items-center">
+      <a href="products.html" class="hover:underline" aria-label="Ver polos">Polos</a>
+      <a href="products.html?categoria=pantalones" class="hover:underline" aria-label="Ver pantalones">Pantalones</a>
+      <a href="products.html?categoria=casacas" class="hover:underline" aria-label="Ver casacas">Casacas</a>
+      <a href="products.html?categoria=nuevos" class="hover:underline" aria-label="Ver nueva colección">Nueva Colección</a>
+      <button onclick="toggleCart()" class="bg-white text-black px-3 py-1 rounded flex items-center gap-2" aria-label="Abrir carrito">
+        🛒 <span id="cart-count" aria-live="polite">0</span>
+      </button>
+    </div>
+    <button class="md:hidden text-2xl" onclick="toggleMobileMenu()" aria-label="Abrir menú móvil" aria-expanded="false">☰</button>
+  </div>
+  <div id="mobileMenu" class="hidden md:hidden bg-black flex flex-col items-center space-y-4 py-4 z-50 transition-transform duration-300 transform translate-y-full" aria-hidden="true">
+    <a href="products.html" class="text-lg hover:underline" aria-label="Ver polos">Polos</a>
+    <a href="products.html?categoria=pantalones" class="text-lg hover:underline" aria-label="Ver pantalones">Pantalones</a>
+    <a href="products.html?categoria=casacas" class="text-lg hover:underline" aria-label="Ver casacas">Casacas</a>
+    <a href="products.html?categoria=nuevos" class="text-lg hover:underline" aria-label="Ver nueva colección">Nueva Colección</a>
+  </div>
+</nav>
+
+    <!-- HERO -->
+    <section class="pt-24 bg-white">
+      <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-8 items-center">
+        <div class="space-y-4 text-center md:text-left">
+          <h1 class="text-4xl md:text-5xl font-bold">Nueva Colección</h1>
+          <p class="text-lg">Pear Kakoi</p>
+          <button class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition" aria-label="Comprar ahora">COMPRAR AHORA</button>
+        </div>
+        <div class="relative overflow-hidden rounded-xl w-full h-80 shadow-lg">
+          <div id="carousel-track" class="flex w-max animate-slide-track">
+            <img src="img/polo1.jpg" alt="Polo Oversize negro" class="h-80 w-[400px] object-cover rounded-xl mx-2" loading="lazy" />
+            <img src="img/polo4.jpeg" alt="Polo Oversize blanco" class="h-80 w-[400px] object-cover rounded-xl mx-2" loading="lazy" />
+            <img src="img/polo3.jpg" alt="Polo Oversize gris" class="h-80 w-[400px] object-cover rounded-xl mx-2" loading="lazy" />
+            <img src="img/polo1.jpg" alt="Polo Oversize negro" class="h-80 w-[400px] object-cover rounded-xl mx-2" loading="lazy" />
+            <img src="img/polo4.jpeg" alt="Polo Oversize blanco" class="h-80 w-[400px] object-cover rounded-xl mx-2" loading="lazy" />
+            <img src="img/polo3.jpg" alt="Polo Oversize gris" class="h-80 w-[400px] object-cover rounded-xl mx-2" loading="lazy" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+  
+
+    <!-- PRODUCTOS -->
+    <section id="polos" class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4">
+        <input id="searchInput" type="text" placeholder="Buscar productos..." class="w-full border rounded px-3 py-2 mb-4 focus:ring-2 focus:ring-indigo-600" aria-label="Buscar productos">
+        <div class="flex flex-wrap gap-2 mb-4">
+          <button onclick="filterProducts('all')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:ring-2 focus:ring-indigo-600" aria-label="Filtrar por todos los productos">Todos</button>
+          <button onclick="filterProducts('new')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:ring-2 focus:ring-indigo-600" aria-label="Filtrar por nuevos productos">Nuevos</button>
+          <button onclick="filterProducts('polos')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:ring-2 focus:ring-indigo-600" aria-label="Filtrar por polos">Polos</button>
+          <button onclick="filterProducts('casacas')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:ring-2 focus:ring-indigo-600" aria-label="Filtrar por casacas">Casacas</button>
+          <button onclick="filterProducts('pantalones')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:ring-2 focus:ring-indigo-600" aria-label="Filtrar por pantalones">Pantalones</button>
+          <button onclick="filterProducts('descuentos')" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 focus:ring-2 focus:ring-indigo-600" aria-label="Filtrar por descuentos">Descuentos</button>
+        </div>
+        <h2 class="text-3xl font-bold text-center mb-4">Tendencias de la Semana</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productGrid"></div>
+      </div>
+    </section>
+
+    <!-- DESCUENTOS -->
+    <section id="descuentos" class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-4">En descuento</h2>
+        <div id="countdown" class="text-center text-red-600 font-semibold mb-4" aria-live="polite"></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="discountGrid"></div>
+      </div>
+    </section>
+
+    <!-- NUESTROS PRODUCTOS -->
+    <section id="nuestros-productos" class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4">
+        <h2 class="text-3xl font-bold text-center mb-10">Nuestros productos</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="allProductsGrid"></div>
+      </div>
+    </section>
+
+    <!-- Overlay -->
+    <div id="cartOverlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden" onclick="toggleCart()" aria-hidden="true"></div>
+
+    <!-- Sidebar -->
+    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-full sm:w-96 bg-white z-50 transform translate-x-full transition-transform duration-300 flex flex-col no-transition-initial" aria-label="Carrito de compras">
+      <div class="flex justify-between items-center p-4 border-b">
+        <h2 class="text-xl font-semibold">Tu Carrito</h2>
+        <button onclick="toggleCart()" class="text-gray-500 hover:text-black text-2xl" aria-label="Cerrar carrito">×</button>
+      </div>
+      <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+      <div class="cart-footer">
+        <div class="subtotal">
+          <span>Total</span>
+          <span id="cartTotal" aria-live="polite">S/. 0.00</span>
+        </div>
+        <button id="checkoutBtn" class="hidden w-full checkout-btn text-white p-3 rounded-lg hover:bg-green-700 transition" aria-label="Finalizar compra">Finalizar compra</button>
+        <button id="clearCartBtn" onclick="clearCart()" class="hidden w-full clear-cart-btn text-white p-3 mt-3 rounded-lg hover:bg-red-700 transition" aria-label="Vaciar carrito">Vaciar carrito</button>
+      </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="modalNombre">
+      <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-lg w-full p-6 relative shadow-xl scale-95 opacity-0 transition-all duration-300" id="modalContent" tabindex="-1">
+        <button onclick="closeModal()" class="absolute top-3 right-4 text-2xl text-gray-500 hover:text-black" aria-label="Cerrar modal">×</button>
+        <div id="modalDiscountLabel" class="absolute top-2 left-2 hidden bg-green-500 text-white text-xs font-bold px-2 py-1 rounded discount-label"></div>
+        <div id="modalNewLabel" class="absolute top-2 left-2 hidden bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">Nuevo</div>
+        <img id="modalImg" src="" alt="" class="w-full max-h-[400px] object-contain rounded-xl mb-4">
+        <h3 id="modalNombre" class="text-2xl font-bold mb-2"></h3>
+        <p id="modalDescripcion" class="text-gray-600 mb-2"></p>
+        <label for="modalTallaSelect" class="text-sm text-gray-700 block mb-1">Elige tu talla:</label>
+        <select id="modalTallaSelect" class="w-full border rounded px-3 py-2 mb-4 focus:ring-2 focus:ring-indigo-600" aria-describedby="modalDescripcion"></select>
+        <div class="mb-4">
+          <label class="text-sm text-gray-700 block mb-1" id="colorSelectLabel">Elige tu color:</label>
+          <div id="colorSelect" class="flex gap-2" role="radiogroup" aria-labelledby="colorSelectLabel"></div>
+        </div>
+        <div id="modalPrecio" class="text-xl font-semibold text-indigo-600 mb-4"></div>
+        <div id="modalDescuento" class="text-sm text-green-600 mb-4 hidden"></div>
+        <button onclick="addToCartFromModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition" aria-label="Agregar al carrito">Agregar al carrito</button>
+      </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="script.js"></script>
+<script>
+  const products = [
+    {
+      id: "1",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 49.00,
+      imagen: "img/polo1.jpg",
+      nuevo: true,
+      descuento: false,
+      colores: [
+        { nombre: "Negro", hex: "#000000" },
+        { nombre: "Blanco", hex: "#FFFFFF" },
+        { nombre: "Gris", hex: "#808080" },
+      ],
+    },
+    {
+      id: "2",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 42.00,
+      imagen: "img/polo2.jpg",
+      nuevo: true,
+      descuento: false,
+      colores: [
+        { nombre: "Azul", hex: "#0000FF" },
+        { nombre: "Negro", hex: "#000000" },
+        { nombre: "Rojo", hex: "#FF0000" },
+      ],
+    },
+    {
+      id: "3",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 42.00,
+      imagen: "img/polo3.jpg",
+      nuevo: true,
+      descuento: false,
+      colores: [
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Blanco", hex: "#FFFFFF" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "4",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 51.00,
+      imagen: "img/polo6.jpeg",
+      nuevo: true,
+      descuento: false,
+      colores: [
+        { nombre: "Blanco", hex: "#FFFFFF" },
+        { nombre: "Azul", hex: "#0000FF" },
+        { nombre: "Verde", hex: "#008000" },
+      ],
+    },
+    {
+      id: "5",
+      nombre: "Casaca",
+      descripcion: "Casaca con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 39.00,
+      precioOriginal: 50.00,
+      imagen: "img/casaca.jpg",
+      nuevo: false,
+      descuento: true,
+      colores: [
+        { nombre: "Verde", hex: "#008000" },
+        { nombre: "Negro", hex: "#000000" },
+        { nombre: "Blanco", hex: "#FFFFFF" },
+      ],
+    },
+    {
+      id: "6",
+      nombre: "Polo Oversize Beige",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/polo4.jpeg",
+      nuevo: false,
+      descuento: true,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "7",
+      nombre: "Pantalón Jogger",
+      descripcion: "Pantalón jogger con diseño urbano",
+      tallas: "28, 29, 30, 31",
+      precio: 45.00,
+      precioOriginal: 60.00,
+      imagen: "img/jogger.jpg",
+      nuevo: false,
+      descuento: true,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "8",
+      nombre: "Polo Oversize Beige 2",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/polo7.jpg",
+      nuevo: false,
+      descuento: true,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "9",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/polo8.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "10",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/polo9.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "11",
+      nombre: "Casaca",
+      descripcion: "Casaca unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/casaca1.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "12",
+      nombre: "Casaca",
+      descripcion: "Casaca unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/casaca2.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "13",
+      nombre: "Pantalón Jogger",
+      descripcion: "Pantalón con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 40.00,
+      precioOriginal: 55.00,
+      imagen: "img/pantalon1.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "14",
+      nombre: "Pantalón Jogger",
+      descripcion: "Pantalón con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 39.00,
+      precioOriginal: 55.00,
+      imagen: "img/pantalon2.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "15",
+      nombre: "Pantalón Jogger",
+      descripcion: "Pantalón con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/pantalon3.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "16",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/pantalon4.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+    {
+      id: "17",
+      nombre: "Polo Oversize",
+      descripcion: "Polo unisex con diseño urbano",
+      tallas: "S, M, L, XL",
+      precio: 45.00,
+      precioOriginal: 55.00,
+      imagen: "img/polo8.jpg",
+      nuevo: false,
+      descuento: false,
+      colores: [
+        { nombre: "Beige", hex: "#F5F5DC" },
+        { nombre: "Gris", hex: "#808080" },
+        { nombre: "Negro", hex: "#000000" },
+      ],
+    },
+  ];
+
+  document.addEventListener("DOMContentLoaded", () => {
+    try {
+      // Save products to localStorage
+      localStorage.setItem("kakoi-products", JSON.stringify(products));
+
+      // Render initial products
+      renderProducts("productGrid", products.filter(p => p.nuevo));
+      renderProducts("discountGrid", products.filter(p => p.descuento && !p.nuevo));
+      renderProducts("allProductsGrid", products);
+
+      // Start countdown
+      startCountdown();
+
+      // Initialize cart
+      updateCart();
+    } catch (error) {
+      console.error("Error initializing page:", error);
+      showToast("Error al cargar la página", true);
+    }
+  });
+</script>
+    </script>
+    <footer class="bg-black text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <p>© 2025 KakoiStyle. Todos los derechos reservados.</p>
+        <div class="mt-4 space-x-4">
+          <a href="/contacto" class="hover:underline" aria-label="Ir a la página de contacto">Contacto</a>
+          <a href="/politicas" class="hover:underline" aria-label="Ir a la página de políticas">Políticas</a>
+          <a href="https://instagram.com/kakoistyle" class="hover:underline" aria-label="Visitar Instagram de KakoiStyle">Instagram</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

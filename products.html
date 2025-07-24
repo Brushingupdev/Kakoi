@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Polos - KakoiStyle</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    
+    #productModal.hidden {
+      pointer-events: none;
+    }
+    .color-option {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.2s, border 0.2s;
+      border: 2px solid transparent;
+    }
+    .color-option.selected {
+      transform: scale(1.2);
+      border: 2px solid #000;
+    }
+    .color-option:focus {
+      outline: 2px solid #4f46e5;
+      outline-offset: 2px;
+    }
+    .discount-label {
+      background: linear-gradient(45deg, #10b981, #059669);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    .cart-item {
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: transform 0.2s;
+    }
+    .cart-item:hover {
+      transform: translateY(-2px);
+    }
+    .cart-item button {
+      transition: background-color 0.2s;
+    }
+    .cart-item .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .cart-item .quantity-controls button {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+   #cartSidebar {
+  border-radius: 0 0 0 12px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+}
+    .cart-footer {
+      background: #f9fafb;
+      border-top: 1px solid #e5e7eb;
+      padding: 20px;
+      border-radius: 0 0 0 12px;
+    }
+    .cart-footer .subtotal {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+    }
+    .cart-footer .subtotal span:first-child {
+      font-weight: 600;
+      color: #1f2937;
+    }
+    .cart-footer .subtotal span:last-child {
+      font-weight: 700;
+      color: #4f46e5;
+      font-size: 1.25rem;
+    }
+    .cart-footer button {
+      transition: all 0.2s ease-in-out;
+      transform: scale(1);
+    }
+    .cart-footer button:hover {
+      transform: scale(1.02);
+    }
+    .checkout-btn {
+      background: linear-gradient(45deg, #10b981, #059669);
+    }
+    .clear-cart-btn {
+      background: linear-gradient(45deg, #ef4444, #b91c1c);
+    }
+    .no-transition-initial {
+  transition: none !important;
+}
+.logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 1.75rem; 
+  letter-spacing: 0.05em; 
+  text-transform: uppercase; 
+}
+
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+  <!-- NAV -->
+  <nav class="bg-black text-white p-4 fixed w-full top-0 z-50 shadow-md" aria-label="Navegación principal">
+    <div class="container mx-auto flex justify-between items-center">
+      <a href="index.html" class="logo text-white" aria-label="Inicio KakoiStyle">KakoiStyle</a>
+      <div class="space-x-4 hidden md:flex items-center">
+        <a href="products.html" class="hover:underline font-semibold" aria-label="Ver polos">Polos</a>
+        <a href="products.html?categoria=pantalones" class="hover:underline" aria-label="Ver pantalones">Pantalones</a>
+        <a href="products.html?categoria=casacas" class="hover:underline" aria-label="Ver casacas">Casacas</a>
+        <a href="products.html?categoria=nuevos" class="hover:underline" aria-label="Ver nueva colección">Nueva Colección</a>
+        <button onclick="toggleCart()" class="bg-white text-black px-3 py-1 rounded flex items-center gap-2" aria-label="Abrir carrito">
+          🛒 <span id="cart-count" aria-live="polite">0</span>
+        </button>
+      </div>
+      <button class="md:hidden text-2xl" onclick="toggleMobileMenu()" aria-label="Abrir menú móvil" aria-expanded="false">☰</button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-black flex flex-col items-center space-y-4 py-4 z-50 transition-transform duration-300 transform translate-y-full" aria-hidden="true">
+      <a href="products.html" class="text-lg hover:underline font-semibold" aria-label="Ver polos">Polos</a>
+      <a href="products.html?categoria=pantalones" class="text-lg hover:underline" aria-label="Ver pantalones">Pantalones</a>
+      <a href="products.html?categoria=casacas" class="text-lg hover:underline" aria-label="Ver casacas">Casacas</a>
+      <a href="products.html?categoria=nuevos" class="text-lg hover:underline" aria-label="Ver nueva colección">Nueva Colección</a>
+    </div>
+  </nav>
+
+  
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto p-6 pt-24">
+    <a href="index.html" class="text-indigo-600 hover:underline mb-4 inline-block" aria-label="Volver al inicio">← Volver al inicio</a>
+    <h1 class="text-3xl font-bold mb-6 text-center">Polos</h1>
+    <div id="loading" class="hidden text-center text-gray-500">Cargando...</div>
+    <div id="gridProductos" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+  </div>
+
+  <!-- Overlay -->
+  <div id="cartOverlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden" onclick="toggleCart()" aria-hidden="true"></div>
+
+  <!-- Sidebar -->
+  <div id="cartSidebar" class="fixed right-0 top-0 h-full w-full sm:w-96 bg-white z-50 transform translate-x-full transition-transform duration-300 flex flex-col no-transition-initial" aria-label="Carrito de compras">
+    <div class="flex justify-between items-center p-4 border-b">
+      <h2 class="text-xl font-semibold">Tu Carrito</h2>
+      <button onclick="toggleCart()" class="text-gray-500 hover:text-black text-2xl" aria-label="Cerrar carrito">×</button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+    <div class="cart-footer">
+      <div class="subtotal">
+        <span>Total</span>
+        <span id="cartTotal" aria-live="polite">S/. 0.00</span>
+      </div>
+      <button id="checkoutBtn" class="hidden w-full checkout-btn text-white p-3 rounded-lg hover:bg-green-700 transition" aria-label="Finalizar compra">Finalizar compra</button>
+      <button id="clearCartBtn" onclick="clearCart()" class="hidden w-full clear-cart-btn text-white p-3 mt-3 rounded-lg hover:bg-red-700 transition" aria-label="Vaciar carrito">Vaciar carrito</button>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div id="productModal" class="fixed inset-0 bg-black bg-opacity-50 hidden flex items-center justify-center z-50 transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="modalNombre">
+    <div onclick="event.stopPropagation()" class="bg-white rounded-2xl max-w-lg w-full p-6 relative shadow-xl scale-95 opacity-0 transition-all duration-300" id="modalContent" tabindex="-1">
+      <button onclick="closeModal()" class="absolute top-3 right-4 text-2xl text-gray-500 hover:text-black" aria-label="Cerrar modal">×</button>
+      <div id="modalDiscountLabel" class="absolute top-2 left-2 hidden bg-green-500 text-white text-xs font-bold px-2 py-1 rounded discount-label"></div>
+      <div id="modalNewLabel" class="absolute top-2 left-2 hidden bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">Nuevo</div>
+      <img id="modalImg" src="" alt="" class="w-full max-h-[400px] object-contain rounded-xl mb-4">
+      <h3 id="modalNombre" class="text-2xl font-bold mb-2"></h3>
+      <p id="modalDescripcion" class="text-gray-600 mb-2"></p>
+      <label for="modalTallaSelect" class="text-sm text-gray-700 block mb-1">Elige tu talla:</label>
+      <select id="modalTallaSelect" class="w-full border rounded px-3 py-2 mb-4 focus:ring-2 focus:ring-indigo-600" aria-describedby="modalDescripcion"></select>
+      <div class="mb-4">
+        <label class="text-sm text-gray-700 block mb-1" id="colorSelectLabel">Elige tu color:</label>
+        <div id="colorSelect" class="flex gap-2" role="radiogroup" aria-labelledby="colorSelectLabel"></div>
+      </div>
+      <div id="modalPrecio" class="text-xl font-semibold text-indigo-600 mb-4"></div>
+      <div id="modalDescuento" class="text-sm text-green-600 mb-4 hidden"></div>
+      <button onclick="addToCartFromModal()" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition" aria-label="Agregar al carrito">Agregar al carrito</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-black text-white py-8">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>© 2025 KakoiStyle. Todos los derechos reservados.</p>
+      <div class="mt-4 space-x-4">
+        <a href="/contacto" class="hover:underline" aria-label="Ir a la página de contacto">Contacto</a>
+        <a href="/politicas" class="hover:underline" aria-label="Ir a la página de políticas">Políticas</a>
+        <a href="https://instagram.com/kakoistyle" class="hover:underline" aria-label="Visitar Instagram de KakoiStyle">Instagram</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  try {
+    // Obtener productos desde localStorage
+    const allProducts = JSON.parse(localStorage.getItem("kakoi-products")) || [];
+
+    // Obtener el parámetro de categoría desde la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoria = urlParams.get("categoria") || "polos"; 
+
+    // Actualizar el título según la categoría
+    const titleElement = document.querySelector("h1.text-3xl");
+    titleElement.innerText = categoria.charAt(0).toUpperCase() + categoria.slice(1); 
+
+    // Filtrar productos según la categoría
+    let filteredProducts = [];
+    if (categoria === "polos") {
+      filteredProducts = allProducts.filter(p => p.nombre.toLowerCase().includes("polo"));
+    } else if (categoria === "pantalones") {
+      filteredProducts = allProducts.filter(p => p.nombre.toLowerCase().includes("pantalón"));
+    } else if (categoria === "casacas") {
+      filteredProducts = allProducts.filter(p => p.nombre.toLowerCase().includes("casaca"));
+    } else if (categoria === "nuevos") {
+      filteredProducts = allProducts.filter(p => p.nuevo);
+    } else {
+      filteredProducts = allProducts; 
+    }
+
+    // Renderizar productos
+    document.getElementById("loading").classList.remove("hidden");
+    renderProducts("gridProductos", filteredProducts);
+    document.getElementById("loading").classList.add("hidden");
+
+    // Mostrar mensaje si no hay productos
+    if (filteredProducts.length === 0) {
+      document.getElementById("gridProductos").innerHTML = `<p class="col-span-full text-center text-gray-500 text-lg">No se encontraron productos en esta categoría.</p>`;
+    }
+
+    // Inicializar carrito
+    updateCart();
+  } catch (error) {
+    console.error("Error initializing page:", error);
+    showToast("Error al cargar la página", true);
+  }
+});
+  </script>
+</body>
+</html>
